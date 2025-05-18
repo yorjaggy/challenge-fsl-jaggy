@@ -1,7 +1,7 @@
 name: CI/CD Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
       - staging
@@ -21,18 +21,18 @@ jobs:
 
   CD-DEVELOP:
     needs: CI
-    if: github.ref == 'devel'
+    if: github.base_ref == 'develop'
     uses: ./.github/workflows/cd.yaml
     with:
-      environment: 'devel'
-      bucket_name: 'web-static-devel'
+      environment: 'develop'
+      bucket_name: 'web-static-develop'
       artifact_name: ${{ needs.CI.outputs.artifact_name }}
     secrets:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
-  deploy-stage:
+  CD-STAGE:
     needs: CI
     if: github.base_ref == 'stage' && github.head_ref == 'devel'
     uses: ./.github/workflows/cd.yaml
@@ -45,7 +45,7 @@ jobs:
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
-  deploy-prod:
+  CD-PROD:
     needs: CI
     if: github.base_ref == 'main' && github.head_ref == 'stage'
     uses: ./.github/workflows/cd.yaml
