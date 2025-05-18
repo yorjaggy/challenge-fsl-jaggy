@@ -11,4 +11,5 @@ variable "environment" {
 variable "build_path" {
   description = "build path of the static files"
   type        = string
+  default     = "../build"
 }
