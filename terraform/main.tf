@@ -92,11 +92,11 @@ resource "aws_s3_object" "object" {
 
 # AWS Cloudfront
 locals {
-  s3_origin_id = "fsl-s3-origin-${var.environment}"
+  s3_origin_id = "fsl-s3-origin"
 }
 
 resource "aws_cloudfront_origin_access_control" "oac_cloudfront" {
-  name                              = "fsl-test"
+  name                              = "fsl-test-${var.environment}"
   description                       = "fsl Policy"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
