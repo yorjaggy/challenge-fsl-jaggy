@@ -88,4 +88,4 @@ jobs:
         run: terraform plan -out=deploy-plan.out -input=false
 
       - name: Run tests
-        run: terraform apply deploy-plan.out -auto-approve
+        run: terraform apply -auto-approve "deploy-plan.out"
