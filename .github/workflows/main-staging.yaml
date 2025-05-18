@@ -2,8 +2,6 @@ name: CI/CD STG
 
 on:
   pull_request:
-    types:
-      - closed
     branches:
       - staging
     paths:
@@ -21,7 +19,7 @@ jobs:
 
   CD:
     needs: CI
-    if: github.base_ref == 'staging' && github.head_ref == 'develop' && github.event.pull_request.merged == true
+    if: github.base_ref == 'staging' && github.head_ref == 'develop'
     uses: ./.github/workflows/cd.yaml
     with:
       environment: 'stage'

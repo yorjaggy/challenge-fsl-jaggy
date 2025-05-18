@@ -2,8 +2,6 @@ name: CI/CD PROD
 
 on:
   pull_request:
-    types:
-      - closed
     branches:
       - main
     paths:
@@ -21,7 +19,7 @@ jobs:
 
   CD:
     needs: CI
-    if: github.base_ref == 'main' && github.head_ref == 'staging' && github.event.pull_request.merged == true
+    if: github.base_ref == 'main' && github.head_ref == 'staging'
     uses: ./.github/workflows/cd.yaml
     with:
       environment: 'prod'
