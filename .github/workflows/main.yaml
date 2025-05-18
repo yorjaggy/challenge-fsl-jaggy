@@ -28,8 +28,8 @@ jobs:
       bucket_name: 'web-static-develop'
       artifact_name: ${{ needs.CI.outputs.artifact_name }}
     secrets:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
   CD-STAGE:
@@ -41,8 +41,8 @@ jobs:
       bucket_name: 'web-static-stage'
       artifact_name: ${{ needs.CI.outputs.artifact_name }}
     secrets:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
   CD-PROD:
@@ -54,6 +54,6 @@ jobs:
       bucket_name: 'web-static-prod'
       artifact_name: ${{ needs.CI.outputs.artifact_name }}
     secrets:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
