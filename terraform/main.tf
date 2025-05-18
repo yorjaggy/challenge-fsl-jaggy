@@ -92,7 +92,7 @@ resource "aws_s3_object" "object" {
 
 # AWS Cloudfront
 locals {
-  s3_origin_id = "fsl-s3-origin"
+  s3_origin_id = "fsl-s3-origin-${var.environment}"
 }
 
 resource "aws_cloudfront_origin_access_control" "oac_cloudfront" {
