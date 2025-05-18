@@ -15,5 +15,5 @@ output "distribution_domain_name" {
 
 output "origin_access_control_id" {
   description = "The ID of the CloudFront origin access control"
-  value       = aws_cloudfront_origin_access_control.s3_origin_access_control.id
+  value       = aws_cloudfront_origin_access_control.oac_cloudfront.id
 }
