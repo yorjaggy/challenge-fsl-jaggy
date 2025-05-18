@@ -1,0 +1,73 @@
+name: CD Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      bucket_name:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY:
+        required: true
+      AWS_SECRET_KEY:
+        required: true
+      AWS_REGION:
+        required: true
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ./build
+
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: us-east-1
+
+      - name: tf init
+        run: terraform init -backend-config="key=environment/${{ inputs.environment }}/terraform.state" -input=false
+
+      - name: tf workspace selection
+        run: terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
+
+      - name: Run formatter
+        run: terraform fmt
+
+      - name: create TF vars
+        run: |
+          cat > terraform.tfvars << EOF
+          bucket_name="${{ inputs.environment }}-fsl-jaggy"
+          environment="${{ inputs.environment }}"
+          EOF
+
+      - name: Run plan
+        run: terraform plan -out=deploy-plan.out -input=false
+
+      - name: Run tests
+        run: terraform apply -auto-approve "deploy-plan.out"
