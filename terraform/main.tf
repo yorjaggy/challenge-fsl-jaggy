@@ -18,7 +18,7 @@ terraform {
 # AWS S3
 
 module "s3" {
-  source = "./modules/s3"
+  source = "./s3"
 
   bucket_name                 = "${var.environment}-${var.bucket_name}"
   environment                 = var.environment
@@ -28,7 +28,7 @@ module "s3" {
 
 # AWS Cloudfront
 module "cloudfront" {
-  source = "./modules/cloudfront"
+  source = "./cloudfront"
 
   environment           = var.environment
   s3_bucket_domain_name = module.s3.bucket_regional_domain_name

@@ -1,10 +1,14 @@
-# In this file put the variables related to the deployment
 variable "bucket_name" {
   type        = string
-  description = "bucket name"
+  description = "Base name for the S3 bucket"
 }
 
 variable "environment" {
   type        = string
   description = "environment of rdicidr"
+}
+
+variable "build_path" {
+  description = "build path of the static files"
+  type        = string
 }
