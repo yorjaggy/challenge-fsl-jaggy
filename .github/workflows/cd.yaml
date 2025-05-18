@@ -1,48 +1,30 @@
-name: CI Pipeline
+name: CD Pipeline
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      bucket_name:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY:
+        required: true
+      AWS_SECRET_KEY:
+        required: true
+      AWS_REGION:
+        required: true
+
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '15'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run formatter
-        run: npm run prettier
-
-      - name: Run tests
-        env:
-          CI: true
-        run: npm run test
-
-      - name: Build project
-        run: npm run build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: fsl-test-jaggy
-          path: ./build
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     defaults:
       run:
         working-directory: ./terraform
@@ -53,7 +35,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: fsl-test-jaggy
+          name: ${{ inputs.artifact_name }}
           path: ./build
 
       - name: Set up terraform
@@ -69,10 +51,10 @@ jobs:
           aws-region: us-east-1
 
       - name: tf init
-        run: terraform init -backend-config="key=environment/prod/terraform.state" -input=false
+        run: terraform init -backend-config="key=environment/${{ inputs.environment }}/terraform.state" -input=false
 
       - name: tf workspace selection
-        run: terraform workspace select prod || terraform workspace new prod
+        run: terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
 
       - name: Run formatter
         run: terraform fmt
@@ -80,8 +62,8 @@ jobs:
       - name: create TF vars
         run: |
           cat > terraform.tfvars << EOF
-          bucket_name="prod-fsl-jaggy"
-          environment="prod"
+          bucket_name="${{ inputs.environment }}-fsl-jaggy"
+          environment="${{ inputs.environment }}"
           EOF
 
       - name: Run tests

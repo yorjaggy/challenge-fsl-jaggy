@@ -1,13 +1,17 @@
 name: CI Pipeline
 
 on:
-  pull_request:
-    branches:
-      - develop
+  workflow_call:
+    outputs:
+      artifact_name:
+        description: "The name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.set-artifact-name.outputs.name }}
 
     steps:
       - name: Check out code
@@ -35,10 +39,15 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Set artifact name
+        id: set-artifact-name
+        run: echo "name=build-${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v4
         with:
-          name: fsl-test-jaggy
+          name: ${{ steps.set-artifact-name.outputs.name }}
           path: ./build
+
 
   deploy:
     needs: build
