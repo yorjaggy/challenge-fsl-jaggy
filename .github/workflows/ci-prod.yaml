@@ -41,6 +41,7 @@ jobs:
           path: ./build
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     defaults:
       run:
